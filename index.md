@@ -1,4 +1,1 @@
-# Hello
-## World!
-
-nice!
+* [Verilog-Mode cheat sheet](verilogmode.html)
