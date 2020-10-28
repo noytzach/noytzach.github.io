@@ -13,3 +13,12 @@
 ```
     .apb\(.*\) (@"(upcase \\"\1\\")"[]), //or downcase
 ```
+
+### Ignore
+```
+//Local Variables:
+//verilog-auto-input-ignore-regexp: "VSS"
+//verilog-auto-output-ignore-regexp: "unconnected.*"
+//END:
+
+```
