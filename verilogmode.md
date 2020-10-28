@@ -8,3 +8,8 @@
 // verilog-library-extensions:(".v" ".h")
 // End:
 ```
+
+### Changing case
+```
+    .apb\(.*\) (@"(upcase \\"\1\\")"[]), //or downcase
+```
