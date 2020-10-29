@@ -22,3 +22,11 @@
 // END:
 
 ```
+
+### Propagate Parameters
+```
+// Local Variables:
+// verilog-auto-inst-param-value:t
+// END:
+```
+
