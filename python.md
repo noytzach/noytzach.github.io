@@ -11,6 +11,13 @@ with open('file.txt') as fp:
    lines = fp.read().splitlines() # get rid of \n
 ```
 
+## iterate over dictionary
+```
+for k, v in d.items():
+   print(k, '->', v)
+```
+
+
 ## executable
 ```
 def inc(x):
