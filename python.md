@@ -8,5 +8,5 @@
 ## read lines of file
 ```
 with open('file.txt') as fp:
-   lines = fp.readlines()
+   lines = fp.read().splitlines() # get rid of \n
 ```
