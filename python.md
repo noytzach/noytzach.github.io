@@ -29,5 +29,5 @@ if __name__ == "__main__":
 
 ## print no newline
 ```
-print('text here', end='')
+print('text here', end='', flush=True) #flush to be printed immediately
 ```
