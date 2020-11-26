@@ -26,3 +26,8 @@ def inc(x):
 if __name__ == "__main__":
    print(inc(argv[0]))
 ```
+
+## print no newline
+```
+print('text here', end='')
+```
