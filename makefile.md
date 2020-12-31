@@ -33,3 +33,9 @@ hello += world            # append
 ```
 file     = $(SOURCE:.cpp=.o)   # foo.cpp => foo.o
 ```
+
+## command prefix
+```
+-cmd       # ignore error
+@cmd       # do not print command
+```
