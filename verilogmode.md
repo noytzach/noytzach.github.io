@@ -1,4 +1,4 @@
-# Verilog-Mode cheat sheet
+# Verilog-Mode Cheatsheet
 
 ### Finding Modules
 ```
