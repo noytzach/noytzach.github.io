@@ -1,4 +1,4 @@
-# Xcelium cheaetsheet
+# Xcelium Cheaetsheet
 
 ## list all instances into instances.txt
 ```
