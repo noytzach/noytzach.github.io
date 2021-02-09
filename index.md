@@ -4,3 +4,4 @@ I'm tired of googling for the same code snippets over and over again, so I decid
 * [Makefile cheatsheet](makefile.html)
 * [Python cheatsheet](python.html)
 * [Bash cheatsheet](bash.html)
+* [Xcelium cheatsheet](xcelium.html)
