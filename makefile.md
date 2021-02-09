@@ -1,4 +1,4 @@
-# Makefile cheatsheet
+# Makefile Cheatsheet
 
 based on [this](https://devhints.io/makefile)
 
