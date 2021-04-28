@@ -17,7 +17,6 @@ for k, v in d.items():
    print(k, '->', v)
 ```
 
-
 ## executable
 ```
 def inc(x):
@@ -30,4 +29,10 @@ if __name__ == "__main__":
 ## print no newline
 ```
 print('text here', end='', flush=True) #flush to be printed immediately
+```
+
+## enumerate
+```
+for count, value in enumerate(values):
+   print(count, value)
 ```
