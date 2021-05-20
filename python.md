@@ -36,3 +36,10 @@ print('text here', end='', flush=True) #flush to be printed immediately
 for count, value in enumerate(values):
    print(count, value)
 ```
+
+## add to import path
+```
+import sys
+sys.path.insert(0, "/path/to/package")
+import package
+```
