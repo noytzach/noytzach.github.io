@@ -39,3 +39,10 @@ file     = $(SOURCE:.cpp=.o)   # foo.cpp => foo.o
 -cmd       # ignore error
 @cmd       # do not print command
 ```
+
+## grouped targets
+see [here](https://www.gnu.org/software/make/manual/html_node/Multiple-Targets.html)
+```
+foo bar biz &: baz boz
+   echo hello
+```
