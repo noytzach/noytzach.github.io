@@ -1,4 +1,4 @@
-# .bashrc Cheat sheet
+# .bashrc Cheatsheet
 ## Prompt
 ```
 PS1='\e[0;34m\w\e[0m\n$ '
