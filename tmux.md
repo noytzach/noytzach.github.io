@@ -5,3 +5,8 @@
 "  horizontal split
 [  copy mode (scroll up)
 ```
+
+## Resize pane
+```
+C-b C-arrow
+```
