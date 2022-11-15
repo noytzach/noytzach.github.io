@@ -6,3 +6,4 @@ I'm tired of googling for the same code snippets over and over again, so I decid
 * [Bash cheatsheet](bash.html)
 * [.bashrc cheatsheet](bashrc.html)
 * [Xcelium cheatsheet](xcelium.html)
+* [tmux cheatsheet(tmux.html)
