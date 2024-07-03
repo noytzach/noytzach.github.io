@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Interactive Grid</title>
+<style>
+body {
+    display: flex;          
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+#main-container {           
+    display: flex;  
+    position: relative;       /* Make main-container relatively positioned */
+}
+
+#legend {                   
+    display: flex;
+    flex-direction: column;
+    width: 20px;             
+    margin-right: 20px;     
+}
+
+.legend-cell {              
+    height: 1px;
+}
+
+#grid-container {
+    display: flex;
+    flex-direction: column;         
+    align-items: center;            
+}
+
+#grid {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-size), 10px);
+    grid-template-rows: repeat(var(--grid-size), 10px);
+    border: 1px solid black;
+    width: calc(var(--grid-size) * 10px);
+    height: calc(var(--grid-size) * 10px);
+    justify-content: center;   
+    align-content: center;      
+}
+
+.cell {
+    width: 10px;
+    height: 10px;
+}
+
+#warning {       
+    color: red;   
+    visibility: hidden; 
+    margin-bottom: 5px; 
+}
+
+#slider-container { /* New styles for slider container */
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+#slider {
+    width: 200px;
+}
+</style>
+</head>
+<body>
+
+<div id="slider-container">
+    <input type="range" id="slider" min="0" max="100" value="0" oninput="updateGrid()">
+    <span id="slider-value">t = 0.00</span>
+</div>
+
+<div id="main-container">
+    <div id="legend"></div>
+    <div id="grid-container">
+        <div id="warning">⚠️ Invalid expression</div> 
+        <input type="text" id="expression" placeholder="Enter expression (x, y, t)" onkeyup="handleInput()"> 
+        <div id="grid"></div>
+    </div>
+</div>
+
+<script>
+const GRID_SIZE = 63;
+
+document.documentElement.style.setProperty('--grid-size', GRID_SIZE);
+
+let lastValidColors = {};
+let warningTimeout;
+let t = 0; 
+
+function updateGrid() {
+    const expression = document.getElementById("expression").value;
+    const slider = document.getElementById("slider");
+    const sliderValue = document.getElementById("slider-value");
+    t = slider.value / 100; 
+    sliderValue.textContent = `t = ${t.toFixed(2)}`;
+
+    const grid = document.getElementById("grid");
+    const warning = document.getElementById("warning");
+    grid.innerHTML = '';
+    let allFailed = true;
+
+    for (let y = -Math.floor(GRID_SIZE / 2); y <= Math.floor(GRID_SIZE / 2); y++) {
+        for (let x = -Math.floor(GRID_SIZE / 2); x <= Math.floor(GRID_SIZE / 2); x++) {
+            const cell = document.createElement("div");
+            cell.classList.add("cell");
+
+            try {
+                const result = eval(expression); // Evaluate the expression from the textbox
+                const hue = (result % 256);
+                const color = `hsl(${hue}, 100%, 50%)`;
+                cell.style.backgroundColor = color;
+                lastValidColors[`${x},${y}`] = color;
+                allFailed = false;
+            } catch (error) {
+                cell.style.backgroundColor = lastValidColors[`${x},${y}`] || "gray";
+            }
+
+            grid.appendChild(cell);
+        }
+    }
+
+    if (allFailed) {
+        warningTimeout = setTimeout(() => {
+            warning.style.visibility = "visible";
+        }, 3000);
+    } else {
+        clearTimeout(warningTimeout);
+        warning.style.visibility = "hidden";
+    }
+}
+
+function handleInput() {
+    updateGrid();
+    clearTimeout(warningTimeout);
+    warning.style.visibility = "hidden";
+
+    const expression = document.getElementById("expression").value;
+    let allFailed = true;
+
+    // Check if the expression is still invalid
+    for (let y = -Math.floor(GRID_SIZE / 2); y <= Math.floor(GRID_SIZE / 2); y++) {
+        for (let x = -Math.floor(GRID_SIZE / 2); x <= Math.floor(GRID_SIZE / 2); x++) {
+            try {
+                eval(expression);
+                allFailed = false;
+                break; // No need to check further if one is valid
+            } catch (error) {
+                // Continue checking for errors in other cells
+            }
+        }
+    }
+  
+    if (allFailed) {
+        warningTimeout = setTimeout(() => {
+            warning.style.visibility = "visible";
+        }, 3000); 
+    } 
+}
+
+// Create the legend
+const legend = document.getElementById("legend");
+for (let hue = 0; hue < 256; hue++) {
+    const cell = document.createElement("div");
+    cell.classList.add("legend-cell");
+    cell.style.backgroundColor = `hsl(${hue}, 100%, 50%)`;
+    legend.appendChild(cell);
+}
+
+// Initial grid update
+updateGrid(); 
+</script>
+
+</body>
+</html>
