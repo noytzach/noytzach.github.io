@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Interactive Grid</title>
+<style>
+body {
+    display: flex;          
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+#main-container {           
+    display: flex;  
+}
+
+#grid-container {
+    display: flex;
+    flex-direction: column;         
+    align-items: center;            
+}
+
+#grid {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-size), 10px);
+    grid-template-rows: repeat(var(--grid-size), 10px);
+    border: 1px solid black;
+    width: calc(var(--grid-size) * 10px);
+    height: calc(var(--grid-size) * 10px);
+    justify-content: center;   
+    align-content: center;      
+}
+
+.cell {
+    width: 10px;
+    height: 10px;
+}
+
+#warning {       
+    color: red;   
+    visibility: hidden; 
+    margin-bottom: 5px; 
+}
+
+#slider-container {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+#slider {
+    width: 200px;
+}
+
+#palettes-container { 
+    position: absolute;
+    top: 10px;
+    right: 10px; 
+    display: flex;
+    flex-direction: column; 
+    gap: 5px; 
+}
+
+.palette-option {
+    display: flex;         
+    align-items: center;   
+}
+
+.palette-radio {
+    margin-right: 10px;  
+}
+
+/* Horizontal color bars for palettes */
+.palette-bar {
+    height: 5px;           
+    width: 256px;        
+    border: 1px solid #ccc;
+    display: flex;         /* Make it a flex container */
+}
+
+.palette-bar > div {
+    flex-grow: 1;          /* Distribute color steps evenly */
+    height: 100%; 
+}
+</style>
+</head>
+<body>
+  <div id="slider-container">
+    <input type="range" id="slider" min="0" max="100" value="0" oninput="updateGrid()">
+    <span id="slider-value">t = 0.00</span>
+  </div>
+
+  <div id="palettes-container">
+    <label class="palette-option" for="hue">
+        <input type="radio" id="hue" name="palette" value="hue" checked onchange="updateGrid()">
+        <div id="hue-bar" class="palette-bar"></div>
+    </label>
+    <label class="palette-option" for="grayscale">
+        <input type="radio" id="grayscale" name="palette" value="grayscale" onchange="updateGrid()">
+        <div id="grayscale-bar" class="palette-bar"></div>
+    </label>
+  </div>
+
+  <div id="main-container">
+    <div id="grid-container">
+        <div id="warning">⚠️ Invalid expression</div> 
+        <input type="text" id="expression" placeholder="Enter expression (x, y, t)" onkeyup="handleInput()"> 
+        <div id="grid"></div>
+    </div>
+  </div>
+
+<script>
+const GRID_SIZE = 63;
+
+document.documentElement.style.setProperty('--grid-size', GRID_SIZE);
+
+let lastValidColors = {};
+let warningTimeout;
+let t = 0; 
+
+function updateGrid() {
+    const expression = document.getElementById("expression").value;
+    const slider = document.getElementById("slider");
+    const sliderValue = document.getElementById("slider-value");
+    t = slider.value / 100; 
+    sliderValue.textContent = `t = ${t.toFixed(2)}`;
+
+    const grid = document.getElementById("grid");
+    const warning = document.getElementById("warning");
+    const selectedPalette = document.querySelector('input[name="palette"]:checked').value;
+    grid.innerHTML = '';
+    let allFailed = true;
+
+    for (let y = -Math.floor(GRID_SIZE / 2); y <= Math.floor(GRID_SIZE / 2); y++) {
+        for (let x = -Math.floor(GRID_SIZE / 2); x <= Math.floor(GRID_SIZE / 2); x++) {
+            const cell = document.createElement("div");
+            cell.classList.add("cell");
+            try {
+                const result = eval(expression);
+                let color;
+                switch (selectedPalette) {
+                    case "hue":
+                        color = `hsl(${result % 256}, 100%, 50%)`; 
+                        break;
+                    case "grayscale":
+                        const grayValue = (result % 256 + 256) % 256;  
+                        color = `rgb(${grayValue}, ${grayValue}, ${grayValue})`;
+                        break;
+                    default:
+                        color = "gray";
+                }
+                cell.style.backgroundColor = color;
+                lastValidColors[`${x},${y}`] = color;
+                allFailed = false;
+            } catch (error) {
+                cell.style.backgroundColor = lastValidColors[`${x},${y}`] || "gray";
+            }
+
+            grid.appendChild(cell);
+        }
+    }
+
+    if (allFailed) {
+        warningTimeout = setTimeout(() => {
+            warning.style.visibility = "visible";
+        }, 3000);
+    } else {
+        clearTimeout(warningTimeout);
+        warning.style.visibility = "hidden";
+    }
+}
+
+function handleInput() {
+    updateGrid();
+    clearTimeout(warningTimeout);
+    warning.style.visibility = "hidden";
+
+    const expression = document.getElementById("expression").value;
+    let allFailed = true;
+
+    // Check if the expression is still invalid
+    for (let y = -Math.floor(GRID_SIZE / 2); y <= Math.floor(GRID_SIZE / 2); y++) {
+        for (let x = -Math.floor(GRID_SIZE / 2); x <= Math.floor(GRID_SIZE / 2); x++) {
+            try {
+                eval(expression);
+                allFailed = false;
+                break; // No need to check further if one is valid
+            } catch (error) {
+                // Continue checking for errors in other cells
+            }
+        }
+    }
+  
+    if (allFailed) {
+        warningTimeout = setTimeout(() => {
+            warning.style.visibility = "visible";
+        }, 3000); 
+    } 
+}
+
+
+// Function to create color bars for palettes
+function createPaletteBar(barId, colors) {
+    const bar = document.getElementById(barId);
+    bar.innerHTML = ''; 
+    const numSteps = colors.length;
+    const stepWidth = 100 / numSteps; // Calculate width for each color step
+
+    for (let i = 0; i < numSteps; i++) {
+        const step = document.createElement('div');
+        step.style.width = `${stepWidth}%`; /* Width for each step */
+        step.style.height = '100%';           /* Full height */
+        step.style.backgroundColor = colors[i];
+        bar.appendChild(step);
+    }
+}
+
+// Create color bars for each palette
+createPaletteBar("hue-bar", [...Array(256).keys()].map(hue => `hsl(${hue}, 100%, 50%)`));
+createPaletteBar("grayscale-bar", [...Array(256).keys()].map(gray => `rgb(${gray}, ${gray}, ${gray})`)); 
+
+// Initial grid update
+updateGrid();
+</script>
+
+</body>
+</html>
